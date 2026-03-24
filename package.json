@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "client": "npm run dev --prefix client",
+    "server": "nodemon server/server.js",
+    "dev": "concurrently \"npm run client\" \"npm run server\""
+  },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "concurrently": "^9.2.1",
