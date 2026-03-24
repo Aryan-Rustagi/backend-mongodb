@@ -31,14 +31,12 @@ app.get("/api/health", (req, res) => {
 
 // Root route
 app.get("/", (req, res) => {
-  res.send("Server is running...");
+  res.send("API is running...");
 });
 
 // Server start
 const PORT = process.env.PORT || 5000;
 
-// PORT 5000 for localhost port 
-
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });

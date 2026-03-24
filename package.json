@@ -1,13 +1,14 @@
 {
+<{
   "name": "backendassignment1",
   "version": "1.0.0",
   "description": "MERN App",
   "main": "server/server.js",
   "type": "module",
   "scripts": {
-    "server": "nodemon server/server.js",
     "client": "npm run dev --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "server": "nodemon server/server.js",
+    "dev": "concurrently \"npm run client\" \"npm run server\""
   },
   "keywords": [],
   "author": "",

@@ -1,0 +1,13 @@
+
+> npx
+> create-vite client --no-interactive --template react
+
+│
+◇  Scaffolding project in /home/aryanrustagi/Vs code/backend-mongodb/client...
+│
+└  Done. Now run:
+
+  cd client
+  npm install
+  npm run dev
+
