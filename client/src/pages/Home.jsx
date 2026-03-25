@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import './Pages.css';
+import ConnectionTest from '../components/ConnectionTest';
 
 const Home = () => {
   return (
@@ -15,6 +16,11 @@ const Home = () => {
           <Link to="/register" className="btn-primary">Start Writing</Link>
           <Link to="#explore" className="btn-secondary">Explore Posts</Link>
         </div>
+      </section>
+
+      {/* Embedded Test Connectivity component block */}
+      <section style={{ margin: '40px auto', maxWidth: '800px' }}>
+        <ConnectionTest />
       </section>
 
       <section className="features-section" id="explore">
