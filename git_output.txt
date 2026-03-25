@@ -1,0 +1,7 @@
+remote: 
+remote: Create a pull request for 'feature/user-registration' on GitHub by visiting:        
+remote:      https://github.com/Aryan-Rustagi/backend-mongodb/pull/new/feature/user-registration        
+remote: 
+To https://github.com/Aryan-Rustagi/backend-mongodb.git
+ * [new branch]      feature/user-registration -> feature/user-registration
+branch 'feature/user-registration' set up to track 'origin/feature/user-registration'.
