@@ -1,0 +1,5 @@
+commit 1bb2985024f2126ec2a3c8e701d6ddb79080a9ef
+Author: aryanrustagi1234-ship-it <aryanrustagi1234@gmail.com>
+Date:   Wed Mar 25 11:06:16 2026 +0530
+
+    feat: implement user registration with validation and api connection
