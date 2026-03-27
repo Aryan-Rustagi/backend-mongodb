@@ -1,7 +1,21 @@
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Pages.css';
 
 const Dashboard = () => {
+  const { user, loading, logout } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/login');
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) return <div className="loading">Loading Dashboard...</div>;
+  if (!user) return null;
+
   // Placeholder posts list
   const posts = [
     { id: 1, title: 'Getting Started with React Router v6', status: 'Published', date: '2026-03-22' },
@@ -14,9 +28,12 @@ const Dashboard = () => {
       <header className="dashboard-header">
         <div>
           <h2>Dashboard</h2>
-          <p>Welcome back, Writer! Organize your articles together.</p>
+          <p>Welcome back, <strong>{user.name}</strong> ({user.email})!</p>
         </div>
-        <button className="btn-primary">+ Create New Post</button>
+        <div className="header-actions">
+          <button className="btn-primary">+ Create New Post</button>
+          <button onClick={logout} className="btn-secondary logout-btn">Logout</button>
+        </div>
       </header>
 
       <section className="dashboard-content">
