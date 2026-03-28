@@ -1,51 +1,82 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+import { useState, createContext, useContext, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
+function readStoredSession() {
+  try {
     const storedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
-    
-    if (storedUser && token) {
-      setUser(JSON.parse(storedUser));
+    const storedToken = localStorage.getItem('token');
+    if (storedUser && storedToken) {
+      return {
+        user: JSON.parse(storedUser),
+        token: storedToken,
+      };
     }
-    setLoading(false);
-  }, []);
+  } catch {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
+  return { user: null, token: null };
+}
+
+export function AuthProvider({ children }) {
+  const navigate = useNavigate();
+  const [{ user, token }, setSession] = useState(readStoredSession);
 
   const login = async (email, password) => {
     try {
       const { data } = await axios.post('/api/users/login', { email, password });
-      
-      if (data.success) {
+
+      if (data.success && data.token) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.data));
-        setUser(data.data);
+        setSession({ user: data.data, token: data.token });
         return { success: true };
       }
+
+      return {
+        success: false,
+        message: data.message || 'Login failed',
+      };
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Login failed'
+        message: error.response?.data?.message || 'Login failed',
       };
     }
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    setUser(null);
+    setSession({ user: null, token: null });
+    navigate('/login');
+  }, [navigate]);
+
+  const isAuthenticated = () => Boolean(user && token);
+
+  // Session is restored synchronously in useState(readStoredSession); no async boot step.
+  const loading = false;
+
+  const value = {
+    user,
+    token,
+    loading,
+    login,
+    logout,
+    isAuthenticated,
   };
 
-  return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
 
-export const useAuth = () => useContext(AuthContext);
+// eslint-disable-next-line react-refresh/only-export-components -- hook is tied to AuthProvider for discoverability
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === null) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}

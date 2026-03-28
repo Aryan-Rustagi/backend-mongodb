@@ -4,17 +4,18 @@ import { useAuth } from '../context/AuthContext';
 import './Pages.css';
 
 const Dashboard = () => {
-  const { user, loading, logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!user) {
       navigate('/login');
     }
-  }, [user, loading, navigate]);
+  }, [user, navigate]);
 
-  if (loading) return <div className="loading">Loading Dashboard...</div>;
-  if (!user) return null;
+  if (!user) {
+    return <div className="loading">Loading Dashboard...</div>;
+  }
 
   // Placeholder posts list
   const posts = [
