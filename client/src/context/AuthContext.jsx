@@ -1,4 +1,4 @@
-import { useState, createContext, useContext, useCallback } from 'react';
+import { useState, useLayoutEffect, createContext, useContext, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -23,7 +23,19 @@ function readStoredSession() {
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
-  const [{ user, token }, setSession] = useState(readStoredSession);
+  const [{ user, token }, setSession] = useState(() => ({
+    user: null,
+    token: null,
+  }));
+  const [loading, setLoading] = useState(true);
+
+  useLayoutEffect(() => {
+    /* Hydrate from localStorage once; guards need loading until this runs. */
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setSession(readStoredSession());
+    setLoading(false);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, []);
 
   const login = async (email, password) => {
     try {
@@ -56,9 +68,6 @@ export function AuthProvider({ children }) {
   }, [navigate]);
 
   const isAuthenticated = () => Boolean(user && token);
-
-  // Session is restored synchronously in useState(readStoredSession); no async boot step.
-  const loading = false;
 
   const value = {
     user,
