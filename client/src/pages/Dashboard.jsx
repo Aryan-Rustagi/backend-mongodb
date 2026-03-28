@@ -1,21 +1,9 @@
-import { useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Pages.css';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!user) {
-      navigate('/login');
-    }
-  }, [user, navigate]);
-
-  if (!user) {
-    return <div className="loading">Loading Dashboard...</div>;
-  }
 
   // Placeholder posts list
   const posts = [
