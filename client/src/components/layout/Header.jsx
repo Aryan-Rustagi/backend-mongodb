@@ -15,10 +15,12 @@ const Header = () => {
           <Link to="/" className="nav-link">Home</Link>
           {user ? (
             <>
+              <span className="nav-link nav-user">{user.name}</span>
               <Link to="/dashboard" className="nav-link">Dashboard</Link>
               <button 
                 onClick={logout} 
                 className="nav-link logout-nav-btn"
+                type="button"
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
               >
                 Logout
