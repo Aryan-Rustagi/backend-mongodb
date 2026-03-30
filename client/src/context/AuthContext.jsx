@@ -1,6 +1,6 @@
 import { useState, useLayoutEffect, createContext, useContext, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 
 const AuthContext = createContext(null);
 
@@ -39,7 +39,7 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const { data } = await axios.post('/api/users/login', { email, password });
+      const { data } = await api.post('/api/users/login', { email, password });
 
       if (data.success && data.token) {
         localStorage.setItem('token', data.token);

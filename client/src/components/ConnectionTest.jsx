@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import api from '../api';
 
 const ConnectionTest = () => {
   const [data, setData] = useState(null);
@@ -11,15 +12,14 @@ const ConnectionTest = () => {
     setData(null);
 
     try {
-      // Using relative path to utilize Vite proxy
-      const response = await fetch('/api/health');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const result = await response.json();
-      setData(result);
+      const { data } = await api.get('/api/health');
+      setData(data);
     } catch (err) {
-      setError(err.message || 'Failed to connect to backend');
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        'Failed to connect to backend';
+      setError(message);
     } finally {
       setLoading(false);
     }
