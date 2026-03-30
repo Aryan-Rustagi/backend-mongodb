@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import api from '../api';
 import './Pages.css';
 
 const Register = () => {
@@ -52,21 +53,13 @@ const Register = () => {
     setSuccess('');
 
     try {
-      const response = await fetch('/api/users/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password
-        })
+      const { data } = await api.post('/api/users/register', {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
+      if (!data.success) {
         throw new Error(data.message || 'Registration failed.');
       }
 
@@ -75,7 +68,9 @@ const Register = () => {
         navigate('/login');
       }, 2000);
     } catch (err) {
-      setError(err.message);
+      const message =
+        err.response?.data?.message || err.message || 'Registration failed.';
+      setError(message);
     } finally {
       setLoading(false);
     }

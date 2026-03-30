@@ -113,9 +113,27 @@ export const loginUser = async (req, res) => {
 };
 
 
+// @desc    Get current logged-in user (from JWT)
+// @route   GET /api/users/me
+// @access  Private
+export const getMe = async (req, res) => {
+  try {
+    res.status(200).json({
+      success: true,
+      data: req.user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
 // @desc    Get all users
 // @route   GET /api/users
-// @access  Public
+// @access  Private
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find();
@@ -136,7 +154,7 @@ export const getAllUsers = async (req, res) => {
 
 // @desc    Get single user by ID
 // @route   GET /api/users/:id
-// @access  Public
+// @access  Private
 export const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -170,7 +188,7 @@ export const getUserById = async (req, res) => {
 
 // @desc    Update user
 // @route   PUT /api/users/:id
-// @access  Public
+// @access  Private
 export const updateUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -221,7 +239,7 @@ export const updateUser = async (req, res) => {
 
 // @desc    Delete user
 // @route   DELETE /api/users/:id
-// @access  Public
+// @access  Private
 export const deleteUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);

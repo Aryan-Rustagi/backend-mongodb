@@ -1,9 +1,29 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../api';
 import { useAuth } from '../context/AuthContext';
 import './Pages.css';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
+  const [apiUser, setApiUser] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await api.get('/api/users/me');
+        if (!cancelled && data.success) {
+          setApiUser(data.data);
+        }
+      } catch {
+        if (!cancelled) setApiUser(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Placeholder posts list
   const posts = [
@@ -18,6 +38,11 @@ const Dashboard = () => {
         <div>
           <h2>Dashboard</h2>
           <p>Welcome back, <strong>{user.name}</strong> ({user.email})!</p>
+          {apiUser && (
+            <p className="dashboard-api-note">
+              Profile confirmed from protected API (Bearer token sent automatically).
+            </p>
+          )}
         </div>
         <div className="header-actions">
           <button className="btn-primary">+ Create New Post</button>
