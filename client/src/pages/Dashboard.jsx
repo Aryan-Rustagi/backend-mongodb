@@ -1,74 +1,164 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
 import { useAuth } from '../context/AuthContext';
 import './Pages.css';
 
+const PAGE_SIZE = 5;
+
 const Dashboard = () => {
   const { user, logout } = useAuth();
-  const [apiUser, setApiUser] = useState(null);
+  const [page, setPage] = useState(1);
+  const [posts, setPosts] = useState([]);
+  const [pagination, setPagination] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const { data } = await api.get('/api/users/me');
-        if (!cancelled && data.success) {
-          setApiUser(data.data);
-        }
-      } catch {
-        if (!cancelled) setApiUser(null);
+  const loadPosts = useCallback(async (pageNum) => {
+    setLoading(true);
+    setError('');
+    try {
+      const { data } = await api.get('/api/posts', {
+        params: { page: pageNum, limit: PAGE_SIZE },
+      });
+
+      if (data.success) {
+        setPosts(data.data || []);
+        setPagination(data.pagination || null);
+      } else {
+        setError(data.message || 'Failed to load posts');
+        setPosts([]);
+        setPagination(null);
       }
-    })();
-    return () => {
-      cancelled = true;
-    };
+    } catch (err) {
+      const message =
+        err.response?.data?.message || err.message || 'Failed to load posts';
+      setError(message);
+      setPosts([]);
+      setPagination(null);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  // Placeholder posts list
-  const posts = [
-    { id: 1, title: 'Getting Started with React Router v6', status: 'Published', date: '2026-03-22' },
-    { id: 2, title: 'Clean Architecture in Node.js Backend', status: 'Draft', date: '2026-03-24' },
-    { id: 3, title: 'How to build beautiful UIs with glassmorphism', status: 'Published', date: '2026-02-18' },
-  ];
+  useEffect(() => {
+    loadPosts(page);
+  }, [page, loadPosts]);
+
+  const goPrev = () => {
+    setPage((p) => Math.max(1, p - 1));
+  };
+
+  const goNext = () => {
+    if (pagination?.hasNextPage) {
+      setPage((p) => p + 1);
+    }
+  };
+
+  const formatDate = (iso) => {
+    if (!iso) return '';
+    try {
+      return new Date(iso).toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    } catch {
+      return '';
+    }
+  };
 
   return (
     <div className="page-container dashboard-page">
       <header className="dashboard-header">
         <div>
           <h2>Dashboard</h2>
-          <p>Welcome back, <strong>{user.name}</strong> ({user.email})!</p>
-          {apiUser && (
-            <p className="dashboard-api-note">
-              Profile confirmed from protected API (Bearer token sent automatically).
-            </p>
-          )}
+          <p>
+            Welcome back, <strong>{user.name}</strong> ({user.email})!
+          </p>
         </div>
         <div className="header-actions">
-          <button className="btn-primary">+ Create New Post</button>
-          <button onClick={logout} className="btn-secondary logout-btn">Logout</button>
+          <Link to="/posts/new" className="btn-primary">
+            + Create New Post
+          </Link>
+          <button type="button" onClick={logout} className="btn-secondary logout-btn">
+            Logout
+          </button>
         </div>
       </header>
 
       <section className="dashboard-content">
         <label className="section-title">Your Posts</label>
-        
-        <div className="posts-list">
-          {posts.map(post => (
-            <div className="post-item" key={post.id}>
-              <div className="post-info">
-                <h4>{post.title}</h4>
-                <p className="post-date">{post.date}</p>
-              </div>
-              <div className="post-status">
-                <span className={`status-badge ${post.status.toLowerCase()}`}>
-                  {post.status}
-                </span>
-                <Link to={`/posts/${post.id}`} className="btn-secondary btn-sm">Edit</Link>
-              </div>
+
+        {loading && (
+          <div className="dashboard-state dashboard-state--loading">Loading posts…</div>
+        )}
+
+        {!loading && error && (
+          <div className="dashboard-state dashboard-state--error">
+            <p>{error}</p>
+            <button type="button" className="btn-secondary" onClick={() => loadPosts(page)}>
+              Try again
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && posts.length === 0 && (
+          <div className="dashboard-state dashboard-state--empty">
+            <p>No posts yet. Create your first post to see it here.</p>
+            <Link to="/posts/new" className="btn-primary">
+              Create a post
+            </Link>
+          </div>
+        )}
+
+        {!loading && !error && posts.length > 0 && (
+          <>
+            <div className="posts-list">
+              {posts.map((post) => (
+                <div className="post-item" key={post._id}>
+                  <div className="post-info">
+                    <h4>{post.title}</h4>
+                    <p className="post-date">{formatDate(post.createdAt)}</p>
+                    <p className="post-excerpt">{post.body.slice(0, 120)}{post.body.length > 120 ? '…' : ''}</p>
+                  </div>
+                  <div className="post-status">
+                    <span className={`status-badge ${String(post.status).toLowerCase()}`}>
+                      {post.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+
+            {pagination && pagination.totalPages > 0 && (
+              <div className="pagination-bar">
+                <p className="pagination-meta">
+                  Page {pagination.page} of {pagination.totalPages} · {pagination.totalItems} post
+                  {pagination.totalItems !== 1 ? 's' : ''}
+                </p>
+                <div className="pagination-actions">
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={goPrev}
+                    disabled={!pagination.hasPrevPage}
+                  >
+                    Previous
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={goNext}
+                    disabled={!pagination.hasNextPage}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
       </section>
     </div>
   );

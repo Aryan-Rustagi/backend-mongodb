@@ -4,6 +4,7 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import testRoutes from "./routes/testRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import postRoutes from "./routes/postRoutes.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -27,6 +28,7 @@ app.use(express.json());
 // Routes
 app.use("/api/test", testRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/posts", postRoutes);
 
 // Health Check Route
 app.get("/api/health", (req, res) => {

@@ -17,6 +17,7 @@ const Header = () => {
             <>
               <span className="nav-link nav-user">{user.name}</span>
               <Link to="/dashboard" className="nav-link">Dashboard</Link>
+              <Link to="/posts/new" className="nav-link">New post</Link>
               <button 
                 onClick={logout} 
                 className="nav-link logout-nav-btn"
