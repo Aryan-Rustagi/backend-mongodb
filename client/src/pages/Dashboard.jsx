@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
 import './Pages.css';
 
 const PAGE_SIZE = 5;
@@ -26,7 +27,9 @@ const Dashboard = () => {
         setPosts(data.data || []);
         setPagination(data.pagination || null);
       } else {
-        setError(data.message || 'Failed to load posts');
+        const message = data.message || 'Failed to load posts';
+        setError(message);
+        toast.error(message);
         setPosts([]);
         setPagination(null);
       }
@@ -34,6 +37,7 @@ const Dashboard = () => {
       const message =
         err.response?.data?.message || err.message || 'Failed to load posts';
       setError(message);
+      toast.error(message);
       setPosts([]);
       setPagination(null);
     } finally {
@@ -80,11 +84,11 @@ const Dashboard = () => {
       if (!data.success) {
         throw new Error(data.message || 'Failed to delete post.');
       }
-      // No need to reload, post represents current items
+      toast.success('Post deleted successfully');
     } catch (err) {
       const message =
         err.response?.data?.message || err.message || 'Failed to delete post.';
-      alert(message);
+      toast.error(message);
       // Rollback UI
       setPosts(previousPosts);
     }

@@ -5,25 +5,23 @@ import jwt from "jsonwebtoken";
 // @desc    Register a new user
 // @route   POST /api/users/register
 // @access  Public
-export const registerUser = async (req, res) => {
+export const registerUser = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
 
     // Check if all fields are provided
     if (!name || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Please provide all fields (name, email, password)",
-      });
+      const error = new Error("Please provide all fields (name, email, password)");
+      error.statusCode = 400;
+      return next(error);
     }
 
     // Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({
-        success: false,
-        message: "User with this email already exists",
-      });
+      const error = new Error("User with this email already exists");
+      error.statusCode = 400;
+      return next(error);
     }
 
     // Hash password
@@ -46,45 +44,38 @@ export const registerUser = async (req, res) => {
       data: user,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
 // @desc    Login user
 // @route   POST /api/users/login
 // @access  Public
-export const loginUser = async (req, res) => {
+export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
     // Check if email and password are provided
     if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Please provide email and password",
-      });
+      const error = new Error("Please provide email and password");
+      error.statusCode = 400;
+      return next(error);
     }
 
     // Check if user exists (with password)
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid credentials",
-      });
+      const error = new Error("Invalid credentials");
+      error.statusCode = 401;
+      return next(error);
     }
 
     // Check if password matches
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid credentials",
-      });
+      const error = new Error("Invalid credentials");
+      error.statusCode = 401;
+      return next(error);
     }
 
     // Generate JWT
@@ -104,11 +95,7 @@ export const loginUser = async (req, res) => {
       data: user,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
@@ -116,25 +103,21 @@ export const loginUser = async (req, res) => {
 // @desc    Get current logged-in user (from JWT)
 // @route   GET /api/users/me
 // @access  Private
-export const getMe = async (req, res) => {
+export const getMe = async (req, res, next) => {
   try {
     res.status(200).json({
       success: true,
       data: req.user,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
 // @desc    Get all users
 // @route   GET /api/users
 // @access  Private
-export const getAllUsers = async (req, res) => {
+export const getAllUsers = async (req, res, next) => {
   try {
     const users = await User.find();
 
@@ -144,26 +127,21 @@ export const getAllUsers = async (req, res) => {
       data: users,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
 // @desc    Get single user by ID
 // @route   GET /api/users/:id
 // @access  Private
-export const getUserById = async (req, res) => {
+export const getUserById = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
+      const error = new Error("User not found");
+      error.statusCode = 404;
+      return next(error);
     }
 
     res.status(200).json({
@@ -171,35 +149,27 @@ export const getUserById = async (req, res) => {
       data: user,
     });
   } catch (error) {
-    // Handle invalid ObjectId format
     if (error.kind === "ObjectId") {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid user ID format",
-      });
+      error.statusCode = 400;
+      error.message = "Invalid user ID format";
     }
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
 // @desc    Update user
 // @route   PUT /api/users/:id
 // @access  Private
-export const updateUser = async (req, res) => {
+export const updateUser = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
 
     const user = await User.findById(req.params.id);
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
+      const error = new Error("User not found");
+      error.statusCode = 404;
+      return next(error);
     }
 
     // Update fields if provided
@@ -224,31 +194,24 @@ export const updateUser = async (req, res) => {
     });
   } catch (error) {
     if (error.kind === "ObjectId") {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid user ID format",
-      });
+      error.statusCode = 400;
+      error.message = "Invalid user ID format";
     }
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
 // @desc    Delete user
 // @route   DELETE /api/users/:id
 // @access  Private
-export const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
+      const error = new Error("User not found");
+      error.statusCode = 404;
+      return next(error);
     }
 
     await User.findByIdAndDelete(req.params.id);
@@ -259,15 +222,9 @@ export const deleteUser = async (req, res) => {
     });
   } catch (error) {
     if (error.kind === "ObjectId") {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid user ID format",
-      });
+      error.statusCode = 400;
+      error.message = "Invalid user ID format";
     }
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
+    next(error);
   }
 };
