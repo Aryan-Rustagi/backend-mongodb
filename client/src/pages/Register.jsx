@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
+import { toast } from 'react-toastify';
 import './Pages.css';
 
 const Register = () => {
@@ -45,6 +46,7 @@ const Register = () => {
     const validationError = validate();
     if (validationError) {
       setError(validationError);
+      toast.error(validationError);
       return;
     }
 
@@ -63,7 +65,9 @@ const Register = () => {
         throw new Error(data.message || 'Registration failed.');
       }
 
-      setSuccess('Registration successful! Redirecting to login...');
+      const msg = 'Registration successful! Redirecting to login...';
+      setSuccess(msg);
+      toast.success(msg);
       setTimeout(() => {
         navigate('/login');
       }, 2000);
@@ -71,6 +75,7 @@ const Register = () => {
       const message =
         err.response?.data?.message || err.message || 'Registration failed.';
       setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }

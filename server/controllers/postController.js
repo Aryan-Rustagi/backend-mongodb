@@ -3,15 +3,14 @@ import Post from "../models/Post.js";
 // @desc    Create a post for the logged-in user
 // @route   POST /api/posts
 // @access  Private
-export const createPost = async (req, res) => {
+export const createPost = async (req, res, next) => {
   try {
     const { title, body, status } = req.body;
 
     if (!title || !body) {
-      return res.status(400).json({
-        success: false,
-        message: "Title and body are required",
-      });
+      const error = new Error("Title and body are required");
+      error.statusCode = 400;
+      return next(error);
     }
 
     const allowedStatus = ["draft", "published"];
@@ -32,18 +31,14 @@ export const createPost = async (req, res) => {
       data: post,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
 // @desc    Get current user's posts with pagination
 // @route   GET /api/posts?page=1&limit=5
 // @access  Private
-export const getMyPosts = async (req, res) => {
+export const getMyPosts = async (req, res, next) => {
   try {
     const page = Math.max(1, parseInt(String(req.query.page), 10) || 1);
     const rawLimit = parseInt(String(req.query.limit), 10) || 5;
@@ -77,33 +72,27 @@ export const getMyPosts = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
+    next(error);
   }
 };
 // @desc    Get a specific post by ID
 // @route   GET /api/posts/:id
 // @access  Private
-export const getPostById = async (req, res) => {
+export const getPostById = async (req, res, next) => {
   try {
     const post = await Post.findById(req.params.id);
 
     if (!post) {
-      return res.status(404).json({
-        success: false,
-        message: "Post not found",
-      });
+      const error = new Error("Post not found");
+      error.statusCode = 404;
+      return next(error);
     }
 
     // Authorization: Check if the user owns the post
     if (post.author.toString() !== req.user._id.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: "Not authorized to access this post",
-      });
+      const error = new Error("Not authorized to access this post");
+      error.statusCode = 403;
+      return next(error);
     }
 
     res.status(200).json({
@@ -111,34 +100,28 @@ export const getPostById = async (req, res) => {
       data: post,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
 // @desc    Update a post
 // @route   PUT /api/posts/:id
 // @access  Private
-export const updatePost = async (req, res) => {
+export const updatePost = async (req, res, next) => {
   try {
     let post = await Post.findById(req.params.id);
 
     if (!post) {
-      return res.status(404).json({
-        success: false,
-        message: "Post not found",
-      });
+      const error = new Error("Post not found");
+      error.statusCode = 404;
+      return next(error);
     }
 
     // Check ownership
     if (post.author.toString() !== req.user._id.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: "Not authorized to update this post",
-      });
+      const error = new Error("Not authorized to update this post");
+      error.statusCode = 403;
+      return next(error);
     }
 
     const { title, body, status } = req.body;
@@ -155,34 +138,28 @@ export const updatePost = async (req, res) => {
       data: updatedPost,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
 // @desc    Delete a post
 // @route   DELETE /api/posts/:id
 // @access  Private
-export const deletePost = async (req, res) => {
+export const deletePost = async (req, res, next) => {
   try {
     const post = await Post.findById(req.params.id);
 
     if (!post) {
-      return res.status(404).json({
-        success: false,
-        message: "Post not found",
-      });
+      const error = new Error("Post not found");
+      error.statusCode = 404;
+      return next(error);
     }
 
     // Check ownership
     if (post.author.toString() !== req.user._id.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: "Not authorized to delete this post",
-      });
+      const error = new Error("Not authorized to delete this post");
+      error.statusCode = 403;
+      return next(error);
     }
 
     await post.deleteOne();
@@ -192,10 +169,6 @@ export const deletePost = async (req, res) => {
       message: "Post deleted successfully",
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
+    next(error);
   }
 };

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import api from '../api';
+import { toast } from 'react-toastify';
 import './Pages.css';
 
 const EditPost = () => {
@@ -22,11 +23,14 @@ const EditPost = () => {
           setBody(data.data.body);
           setStatus(data.data.status);
         } else {
-          setError(data.message || 'Failed to fetch post');
+          const message = data.message || 'Failed to fetch post';
+          setError(message);
+          toast.error(message);
         }
       } catch (err) {
         const message = err.response?.data?.message || err.message || 'Failed to fetch post';
         setError(message);
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -48,15 +52,18 @@ const EditPost = () => {
       });
 
       if (data.success) {
-        alert('Post updated successfully');
+        toast.success('Post updated successfully');
         navigate('/dashboard');
         return;
       }
 
-      setError(data.message || 'Could not update post');
+      const message = data.message || 'Could not update post';
+      setError(message);
+      toast.error(message);
     } catch (err) {
       const message = err.response?.data?.message || err.message || 'Could not update post';
       setError(message);
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }

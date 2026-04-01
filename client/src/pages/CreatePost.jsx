@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
+import { toast } from 'react-toastify';
 import './Pages.css';
 
 const CreatePost = () => {
@@ -24,15 +25,19 @@ const CreatePost = () => {
       });
 
       if (data.success) {
+        toast.success('Post created successfully!');
         navigate('/dashboard');
         return;
       }
 
-      setError(data.message || 'Could not create post');
+      const message = data.message || 'Could not create post';
+      setError(message);
+      toast.error(message);
     } catch (err) {
       const message =
         err.response?.data?.message || err.message || 'Could not create post';
       setError(message);
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }

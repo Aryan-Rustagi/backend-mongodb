@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
 import './Pages.css';
 
 const Login = () => {
@@ -20,9 +21,11 @@ const Login = () => {
     const result = await login(email, password);
     
     if (result.success) {
+      toast.success('Login successful!');
       navigate('/dashboard');
     } else {
       setError(result.message);
+      toast.error(result.message);
     }
     setIsLoading(false);
   };
