@@ -1,12 +1,12 @@
-/* Header.css */
+/* Header.css - Minimalist Black & White Theme */
 .main-header {
-  background: rgba(18, 18, 18, 0.85);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
   width: 100%;
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid #e5e7eb;
   padding: 1rem 0;
 }
 
@@ -20,15 +20,12 @@
 }
 
 .logo a {
-  font-size: 1.8rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #000000;
   text-decoration: none;
-  letter-spacing: -1px;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
 }
 
 .nav-menu {
@@ -38,40 +35,56 @@
 }
 
 .nav-link {
-  color: #94a3b8;
+  color: #4b5563;
   text-decoration: none;
   font-weight: 500;
   font-size: 0.95rem;
-  transition: color 0.3s ease, transform 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .nav-link:hover {
-  color: #f8fafc;
-  transform: translateY(-1px);
+  color: #000000;
 }
 
 .btn-login {
-  color: #1e1b4b !important;
-  background: #f8fafc;
+  color: #000000 !important;
+  background: transparent;
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 600;
+  border: 1px solid transparent;
 }
 
 .btn-login:hover {
-  background: #e2e8f0;
+  border-color: #000000;
 }
 
 .btn-register {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  background: #000000;
   color: #ffffff !important;
-  padding: 0.5rem 1.2rem;
-  border-radius: 8px;
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
   font-weight: 600;
-  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+  border: 1px solid #000000;
+  transition: all 0.2s ease;
 }
 
 .btn-register:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
+  background: #ffffff;
+  color: #000000 !important;
+}
+
+/* Responsive constraints for Header */
+@media (max-width: 640px) {
+  .header-container {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+  
+  .nav-menu {
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }

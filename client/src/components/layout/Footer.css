@@ -1,9 +1,9 @@
-/* Footer.css */
+/* Footer.css - Minimalist Black & White Theme */
 .main-footer {
-  background: #111827;
-  color: #9ca3af;
+  background: #ffffff;
+  color: #4b5563;
   padding: 2.5rem 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid #e5e7eb;
   position: relative;
   bottom: 0;
   width: 100%;
@@ -21,6 +21,7 @@
 .copyright {
   font-size: 0.9rem;
   font-weight: 400;
+  color: #6b7280;
 }
 
 .footer-links {
@@ -29,7 +30,7 @@
 }
 
 .footer-links a {
-  color: #6b7280;
+  color: #4b5563;
   font-size: 0.85rem;
   text-decoration: none;
   font-weight: 500;
@@ -37,7 +38,7 @@
 }
 
 .footer-links a:hover {
-  color: #9ca3af;
+  color: #000000;
 }
   
 @media (max-width: 640px) {
@@ -47,5 +48,3 @@
     text-align: center;
   }
 }
-  
-  
