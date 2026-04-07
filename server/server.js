@@ -7,6 +7,7 @@ import userRoutes from "./routes/userRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import errorHandler from "./middleware/errorMiddleware.js"; // Import error handler
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,6 +45,9 @@ app.get("/api/health", (req, res) => {
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
+
+// Register error handler (Must be after all routes)
+app.use(errorHandler);
 
 // Server start
 const PORT = process.env.PORT || 5000;

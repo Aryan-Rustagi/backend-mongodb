@@ -1,0 +1,43 @@
+commit 0a601aded154d1c96dd57a3eba8b3073ba2441ed
+Author: user.email <aryanrustagi1234@gmail.com>
+Date:   Tue Mar 31 11:14:41 2026 +0530
+
+    ...
+
+commit a462485f3488c068acae2ef2add50eab220046e1
+Author: aryanrustagi1234-ship-it <aryanrustagi1234@gmail.com>
+Date:   Mon Mar 30 15:16:33 2026 +0530
+
+    .
+
+commit 106be51d7bd95a8dcb89a8d6dba62890b106fc1d
+Merge: 5906299 6693173
+Author: Aryan Rustagi <aryanrustagi1234@gmail.com>
+Date:   Mon Mar 30 11:50:53 2026 +0530
+
+    Merge pull request #9 from Aryan-Rustagi/feature/crud-create-read-pagination
+    
+    feat: posts CRUD create/read with pagination for dashboard
+
+commit 66931733bedb95fa39e96b0c1dec217ea747d1bd
+Author: aryanrustagi1234-ship-it <aryanrustagi1234@gmail.com>
+Date:   Mon Mar 30 10:14:37 2026 +0530
+
+    feat: posts CRUD create/read with pagination for dashboard
+    
+    - Add Post model linked to User author
+    - POST /api/posts and GET /api/posts with page, limit, pagination metadata
+    - Protect post routes with JWT middleware
+    - CreatePost page and dashboard list with prev/next pagination
+    - Loading, error (retry), and empty states
+    
+    Made-with: Cursor
+
+commit 590629950f5c909622f204bc7b9c2b05d55727ae
+Merge: ad6f0e2 0a00e3e
+Author: Aryan Rustagi <aryanrustagi1234@gmail.com>
+Date:   Mon Mar 30 10:09:28 2026 +0530
+
+    Merge pull request #8 from Aryan-Rustagi/feature/authenticated-api-requests
+    
+    feat: centralized Axios client with JWT interceptors and protected AP…
