@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
+import ImageUpload from '../components/ImageUpload';
 import './Pages.css';
 
 const CreatePost = () => {
@@ -9,7 +10,18 @@ const CreatePost = () => {
   const [status, setStatus] = useState('draft');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [imageUrl, setImageUrl] = useState(null);
   const navigate = useNavigate();
+
+  // Handle image upload from ImageUpload component
+  const handleUpload = (formData) => {
+    // Log the file object to confirm it's in FormData
+    const imageFile = formData.get('image');
+    console.log('Image file ready for upload:', imageFile);
+    
+    // TODO: In Lesson 4.7, this will make the actual API call to /api/upload
+    // For now, just logging confirms the FormData is built correctly
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -91,6 +103,11 @@ const CreatePost = () => {
               <option value="draft">Draft</option>
               <option value="published">Published</option>
             </select>
+          </div>
+
+          <div className="form-group">
+            <label>Featured Image</label>
+            <ImageUpload onUpload={handleUpload} />
           </div>
 
           <button type="submit" className="btn-primary auth-btn" disabled={submitting}>
